@@ -188,46 +188,46 @@ void ringingState(int analRead) {
     digitalWrite(VSS_TWO, LOW);
     noTone(PIEZO_PIN);
   }
-  Serial.println(ring);
-  switch (ring) {
-    case pause:
-      if ((currTime - pauseTime) <= RING_LENGTH) {
-        digitalWrite(VSS_ONE, LOW);
-        digitalWrite(VSS_TWO, LOW);
-        noTone(PIEZO_PIN);
-      }
-      else {
-        pauseTime = millis();
-        ring = left;
-      }
-      break;
-    case left:
-    case right:
-      if ((currTime - pauseTime) <= RING_LENGTH) {
-        if ((currTime - ringTime) >= RING_PERIOD/2) {
-          ringTime = currTime;
-          tone(PIEZO_PIN, 250);
-          switch(ring) {
-            case left:
-              digitalWrite(VSS_ONE, HIGH);
-              digitalWrite(VSS_TWO, LOW);
-              ring = right;
-              break;
-            case right:
-              digitalWrite(VSS_ONE, LOW);
-              digitalWrite(VSS_TWO, HIGH);
-              ring = left;
-              break;
+  else {
+    switch (ring) {
+      case pause:
+        if ((currTime - pauseTime) <= RING_LENGTH) {
+          digitalWrite(VSS_ONE, LOW);
+          digitalWrite(VSS_TWO, LOW);
+          noTone(PIEZO_PIN);
+        }
+        else {
+          pauseTime = millis();
+          ring = left;
+        }
+        break;
+      case left:
+      case right:
+        if ((currTime - pauseTime) <= RING_LENGTH) {
+          if ((currTime - ringTime) >= RING_PERIOD/2) {
+            ringTime = currTime;
+            tone(PIEZO_PIN, 250);
+            switch(ring) {
+              case left:
+                digitalWrite(VSS_ONE, HIGH);
+                digitalWrite(VSS_TWO, LOW);
+                ring = right;
+                break;
+              case right:
+                digitalWrite(VSS_ONE, LOW);
+                digitalWrite(VSS_TWO, HIGH);
+                ring = left;
+                break;
+            }
           }
         }
-      }
-      else {
-        pauseTime = millis();
-        ring = pause;
-      }
-      break;
-  }
-  
+        else {
+          pauseTime = millis();
+          ring = pause;
+        }
+        break;
+    }
+  }  
   if(analRead <= LOW_THRESH) {
     lastTimeLow = millis();
   }
@@ -246,21 +246,27 @@ void loop() {
   
   switch (phone) {
     case null_state:
+      Serial.println("null");
       nullState(analRead);
       break;
     case on_hook:
+      Serial.println("on hook");
       onHook(analRead, digiReadRing);
       break;
     case off_hook:
+      Serial.println("off hook");
       offHook(analRead, digiReadCall);
       break;
     case dialing:
+      Serial.println("dialing");
       dialingState(analRead);
       break;
     case calling:
+      Serial.println("calling");
       callingState(analRead);
       break;
     case ringing:
+      Serial.println("ringing");
       ringingState(analRead);
       break;
   }
