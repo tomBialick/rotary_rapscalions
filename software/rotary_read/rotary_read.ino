@@ -6,8 +6,8 @@ const int CALL_PIN = 7;
 const int RING_PIN = 8;
 const int VSS_ONE = 9;
 const int VSS_TWO = 10;
-const int PIEZO_PIN = 6;
-const int HIGH_THRESH = 400; 
+const int RELAY_PIN = 6;
+const int HIGH_THRESH = 350; 
 const int LOW_THRESH = 25; 
 const int PULSE_TIME = 50; //ms
 const int PAUSE_TIME = 50; //ms
@@ -62,7 +62,7 @@ void setup() {
   pinMode(RING_PIN, INPUT);
   pinMode(VSS_ONE, OUTPUT);
   pinMode(VSS_TWO, OUTPUT);
-  pinMode(PIEZO_PIN, OUTPUT);
+  pinMode(RELAY_PIN, OUTPUT);
 
   phoneNumber = (char*) malloc(17 * sizeof(char));
   digitCounter = 0;
@@ -186,7 +186,8 @@ void ringingState(int analRead) {
     lastTimeHigh = millis();
     digitalWrite(VSS_ONE, LOW);
     digitalWrite(VSS_TWO, LOW);
-    noTone(PIEZO_PIN);
+    digitalWrite(RELAY_PIN, LOW);
+    //noTone(PIEZO_PIN);
   }
   else {
     switch (ring) {
@@ -194,7 +195,8 @@ void ringingState(int analRead) {
         if ((currTime - pauseTime) <= RING_LENGTH) {
           digitalWrite(VSS_ONE, LOW);
           digitalWrite(VSS_TWO, LOW);
-          noTone(PIEZO_PIN);
+          digitalWrite(RELAY_PIN, LOW);
+          //noTone(PIEZO_PIN);
         }
         else {
           pauseTime = millis();
@@ -206,7 +208,8 @@ void ringingState(int analRead) {
         if ((currTime - pauseTime) <= RING_LENGTH) {
           if ((currTime - ringTime) >= RING_PERIOD/2) {
             ringTime = currTime;
-            tone(PIEZO_PIN, 250);
+            //tone(RELAY_PIN, 250);
+            digitalWrite(RELAY_PIN, HIGH);
             switch(ring) {
               case left:
                 digitalWrite(VSS_ONE, HIGH);
@@ -246,27 +249,27 @@ void loop() {
   
   switch (phone) {
     case null_state:
-      Serial.println("null");
+      //Serial.println("null");
       nullState(analRead);
       break;
     case on_hook:
-      Serial.println("on hook");
+      //Serial.println("on hook");
       onHook(analRead, digiReadRing);
       break;
     case off_hook:
-      Serial.println("off hook");
+      //Serial.println("off hook");
       offHook(analRead, digiReadCall);
       break;
     case dialing:
-      Serial.println("dialing");
+      //Serial.println("dialing");
       dialingState(analRead);
       break;
     case calling:
-      Serial.println("calling");
+      //Serial.println("calling");
       callingState(analRead);
       break;
     case ringing:
-      Serial.println("ringing");
+      //Serial.println("ringing");
       ringingState(analRead);
       break;
   }
